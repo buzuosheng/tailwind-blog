@@ -1,8 +1,9 @@
 ---
 title: 实现存储的几种方式
 date: 2020-03-20 23:16:28
-tags: 面试
-categories: 面试
+tags: ['缓存', '面试']
+draft: false
+summary: 在浏览器中的几种存储方式
 ---
 
 在浏览器中的存储方式有以下几种：
@@ -64,5 +65,3 @@ Cookie是服务器发送到用户浏览器并保存在本地的一小块数据�
 `Service Worker`是运行在浏览器背后的**独立线程**，可以理解为一个介于客户端和服务器之间的一个代理服务器。在Service Worker一般做以下操作：拦截客户端的请求、向客户端发送消息、向服务器发起请求，但最主要的用途之一是**离线缓存资源**。
 
 Service Worker实现缓存功能一般分为三个步骤：注册Service Worker，监听`install`事件，缓存需要的文件。在下次用户访问的时候会拦截请求的方式查询是否存在缓存，如果存在就在缓存中读取缓存文件，如果不存在就会发起请求，然后在读取数据。
-
-![个人微信公众号](https://img-blog.csdnimg.cn/20200402001106322.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxOTA3ODA2,size_16,color_FFFFFF,t_70)

@@ -22,7 +22,7 @@ interface ListLayoutProps {
   pagination?: PaginationProps
 }
 
-function Pagination({ totalPages, currentPage }: PaginationProps) {
+function Pagination ({ totalPages, currentPage }: PaginationProps) {
   const pathname = usePathname()
   const basePath = pathname.split('/')[1]
   const prevPage = currentPage - 1 > 0
@@ -62,7 +62,7 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
   )
 }
 
-export default function ListLayoutWithTags({
+export default function ListLayoutWithTags ({
   posts,
   title,
   initialDisplayPosts = [],
@@ -121,11 +121,11 @@ export default function ListLayoutWithTags({
           </div>
           {/* 没有宽度的话，当每页的最长最短summary不一样的时候，会导致宽度抖动 */}
           <div className="w-full">
+            {/* TODO, 上下都放置分页器，如果再下边会导致抖动，在上边比较丑 */}
+            {pagination && pagination.totalPages > 1 && (
+              <Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} />
+            )}
             <ul>
-              {/* TODO, 上下都放置分页器，如果再下边会导致抖动，在上边比较丑 */}
-              {pagination && pagination.totalPages > 1 && (
-                <Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} />
-              )}
               {displayPosts.map((post) => {
                 const { path, date, title, summary, tags } = post
                 return (
