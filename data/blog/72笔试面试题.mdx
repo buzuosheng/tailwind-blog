@@ -1,0 +1,159 @@
+---
+title: 7月2日笔试面试题
+date: 2020-07-02 22:26:50
+tags: ['面试题', '前端开发', '技术面试', 'JavaScript', 'Web开发']
+draft: false
+summary: 7月2日笔试面试题
+---
+
+# 7.2 上午笔试题
+
+1、**请描述 cookie,sesstionStorage,localStorage 三者之间的区别**
+
+| 特性         | Cookie         | SessionStorage | LocalStorage         |
+| ------------ | -------------- | -------------- | -------------------- |
+| 有效期       | 可设置过期时间 | 页面关闭即失效 | 永久有效直到手动清除 |
+| 存储容量     | ~4KB           | ~5MB           | ~5MB                 |
+| 与服务器通信 | 会随请求发送   | 不参与         | 不参与               |
+| 作用域       | 所有同源标签页 | 单个标签页     | 所有同源标签页       |
+
+2、**判断以下 js 代码是否正确，并描述原因**
+
+```js
+// 类型比较详解
+'undefined' == undefined // false - 字符串与undefined类型比较
+'8889' == 8889 // true - 字符串会被转换为数字
+```
+
+A 的结果是 False，'undefined'是已经声明的一个字符串，所以与 undefined 相比结果为 False；B 的结果是 true，在字符串和数字比较时，会将字符串转换为数字再进行比较。
+
+3、**请问以下代码最终输出结果是什么**
+
+```js
+;(function () {
+  var a = (b = 345)
+})()
+console.log(b)
+console.log(typeof a)
+```
+
+输出结果 345，undefined，a 是通过`var`关键字进行生命，属于函数内部的局部作用域，而 b 被分配到全局作用域，所以在后边可以访问到 b 的值。
+
+如果在函数内部使用了严格模式的话，代码会在输出 b 的时候报错`Uncaught ReferenceError: b is not defined`
+
+4、**请用 javascript 将字符串`"http://www.alipay.com?orderid=933&ordername=iPhone6s一部”`进行编码和解码；并取出此字符‘?’左右的两个子字符串；之后将原字符串中的`"www.alipay.com"`存入到一个变量里面**
+
+```js
+const url = 'http://www.alipay.com?orderid=933&ordername=iPhone6s一部'
+// 编码
+const encoded = encodeURI(url)
+// 解码
+const decoded = decodeURI(encoded)
+// 分割域名和参数
+const [domain, params] = url.split('?')
+```
+
+使用`encodeURI()`和`decodeURI()`对 url 进行编码和解码，取出'?'左右两个子字符串可以使用`str.split('?')`
+
+5、**请阅读以下代码并分别写出 param,temp1,temp2 三个对象的属性值**
+
+```js
+var param = { Idx: 1, Name: 'wawayaya', Gender: '男' }
+var temp1 = param
+var temp2 = {}
+temp2 = param
+temp1.Name = 'joyreader'
+delete temp2.Gender
+```
+
+对象 temp1 和 temp2 直接使用对象复制，三个对象都指向同一个地址，当一个对象改变时，地址中对象的值也会改变，导致另外两个输出相同的结果。
+
+6、**请将 javascript 对象 account，存储到 sessionStorage 中，并将 account 对象从 sessionStorage 中取出，取出之后打印出 account 对象的所有属性，`var account = {Idx:1,Name:'JoyReader'};`**
+
+```js
+sessionStorage.setItem('key', JSON.stringify(account))
+JSON.parse(window.sessionStorage.getItem('key'))
+```
+
+7、
+
+```js
+// 请描述以下代码存在的问题，并给出优化方案
+var divs = document.getElementsByTagName(“div”);
+for(var i=0;i<divs.length;i++){
+  document.body.appendChild(document.createElement(“div”));
+}
+```
+
+这段代码存在的问题是:
+
+1. 在遍历过程中动态添加 div 会导致 divs.length 不断增加,造成死循环
+2. var 声明的变量存在变量提升问题
+
+优化方案:
+
+1. 将 divs 转为数组后再遍历
+2. 使用 let 替代 var
+
+8、**现有一个网页要求以设备宽度进行呈现，并且此网页不允许用户缩放，当设备宽度在 320px 至 480px 之间时 body 元素的背景颜色为#d0d0d0，请写出相关代码。**
+
+页面禁止缩放使用 meta 标签：`<meta name='viewport' content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"`
+
+获取设备宽度使用`window.screen.width`
+
+9、**现有这样的数据` var data = [{Idx:2,Name:'Qiuguoheng'},{Idx:3,Name:'Liyanhong'},{Idx:4,Name:'Mayun'},....]`此数组的长度为 1000,请遍历此数组，将结果添加至形如下面的表格中,要求“禁用”链接上要有 Idx 的属性值**
+
+```html
+<table id="“data-tb”">
+  <tr>
+    <th>Idx</th>
+    <th>Name</th>
+    <th>操作</th>
+  </tr>
+</table>
+```
+
+创建一个 DocumentFragment，将所有的数据添加到里边，最后将 DocumentFragment 渲染到页面上，只需要操作一次 DOM
+
+10、**写出一些优化网页加载速度的方案或建议**
+
+1. **资源加载优化**
+   - 图片懒加载与预加载
+   - 使用 CDN 加速
+   - 资源压缩(JS/CSS/图片)
+2. **代码优化**
+
+   - JS 文件放置底部
+   - CSS 文件放置头部
+   - 使用 Code Splitting
+   - 实现按需加载
+
+3. **缓存策略**
+   - 合理使用 HTTP 缓存
+   - 利用浏览器存储
+   - 使用 Service Worker
+
+# 7.2 日下午面试
+
+另一家公司，视频面试，对面戴着口罩倒是很好说话的样子。
+
+问题大概有下面这些：
+
+- 为什么选择使用 React
+
+- 数组遍历的区别(`for`、`for...in`、`for...of`、`forEach`、`Map`)
+
+> 使用 Symbol.iterator 可以为对象添加可迭代属性，使用`for...of`进行迭代
+
+- 使用过哪些 antd 组件，有什么问题
+
+- 三个 div 怎么显示在一行（弹性布局`flex-wrap: nowrap`)
+
+- 在项目里有没有做过**按需加载，懒加载**
+
+- 有没有了解过今年的 React 库（没有。。。）
+
+- useEffect 钩子函数（第二个参数，依赖数组，当依赖数组发生改变时调用函数）
+
+- `let`、`const`、`var`有什么区别
+- 跨域问题

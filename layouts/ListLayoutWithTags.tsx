@@ -119,8 +119,13 @@ export default function ListLayoutWithTags({
               </ul>
             </div>
           </div>
-          <div>
+          {/* 没有宽度的话，当每页的最长最短summary不一样的时候，会导致宽度抖动 */}
+          <div className="w-full">
             <ul>
+              {/* TODO, 上下都放置分页器，如果再下边会导致抖动，在上边比较丑 */}
+              {pagination && pagination.totalPages > 1 && (
+                <Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} />
+              )}
               {displayPosts.map((post) => {
                 const { path, date, title, summary, tags } = post
                 return (

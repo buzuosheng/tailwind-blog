@@ -1,0 +1,149 @@
+---
+title: 如何优化判断语句
+date: 2020-07-16 23:16:24
+tags: ['编程技巧', 'JavaScript']
+draft: false
+summary: 介绍多种优化条件判断语句的方法,提高代码可读性和可维护性
+---
+
+# 优化代码中的条件判断语句
+
+在日常编程中,条件判断语句是不可避免的。虽然 `if...else` 和 `switch` 可以解决问题,但往往会导致代码冗长且难以维护。本文将介绍几种优化条件判断的方法。
+
+## 示例问题
+
+以下是一个常见的日期转换示例:
+
+```javascript
+function showTime() {
+  const day = this.state.date.getDay();
+  let dayStr;
+  if (day === 0) {
+    dayStr = '星期日';
+  } else if (day === 1) {
+    dayStr = '星期一';
+  } else if (day === 2) {
+    dayStr = '星期二';
+  } else if (day === 3) {
+    dayStr = '星期三';
+  } else if (day === 4) {
+    dayStr = '星期四';
+  } else if (day === 5) {
+    dayStr = '星期五';
+  } else if (day === 6) {
+    dayStr = '星期六';
+  }
+  return dayStr + this.state.date.toLocaleTimeString();
+}
+```
+
+让我们看看如何优化这段代码。
+
+## 1. 使用查找表(推荐)
+
+最简洁且易维护的方案是使用对象作为查找表:
+
+```javascript
+const WEEK_DAYS = {
+  0: '星期日',
+  1: '星期一',
+  2: '星期二',
+  3: '星期三',
+  4: '星期四',
+  5: '星期五',
+  6: '星期六'
+};
+
+function showTime() {
+  const day = this.state.date.getDay();
+  return (WEEK_DAYS[day] || '') + this.state.date.toLocaleTimeString();
+}
+```
+
+也可以使用 Map 或数组:
+
+```javascript
+// 使用 Map
+const weekDaysMap = new Map([
+  [0, '星期日'],
+  [1, '星期一'],
+  // ...其他映射
+]);
+
+// 使用数组
+const weekDaysArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+```
+
+## 2. 三元运算符(适用于简单判断)
+
+三元运算符适合处理两种情况的判断:
+
+```javascript
+// 不推荐
+if (a > 1) {
+  return 2 * a;
+} else {
+  return a + 1;
+}
+
+// 推荐
+return a > 1 ? 2 * a : a + 1;
+```
+
+注意: 避免嵌套三元运算符,因为会降低代码可读性。
+
+## 3. 逻辑运算符
+
+善用逻辑运算符可以简化很多判断:
+
+```javascript
+// 空值判断
+const value = someValue || defaultValue;
+
+// 条件执行
+isValid && doSomething();
+
+// 多重条件
+const result = condition1 || condition2 || defaultValue;
+```
+
+关键规则:
+- `||`: 返回第一个真值或最后一个值
+- `&&`: 返回第一个假值或最后一个值
+- `!!`: 转换为布尔值
+
+## 4. 策略模式
+
+对于复杂的业务逻辑,可以使用策略模式:
+
+```javascript
+const strategies = {
+  weekday: (date) => {
+    const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    return days[date.getDay()];
+  },
+  time: (date) => date.toLocaleTimeString()
+};
+
+function formatDate(date, format) {
+  return strategies[format](date);
+}
+```
+
+## 最佳实践
+
+1. 优先使用查找表(对象/Map/数组)处理多个固定值的映射
+2. 使用三元运算符处理简单的二元判断
+3. 合理使用逻辑运算符简化代码
+4. 复杂逻辑考虑使用策略模式
+5. 保持代码清晰可读,避免过度优化
+
+## 总结
+
+优化条件判断不仅能减少代码量,更重要的是提高代码的:
+- 可读性
+- 可维护性
+- 可扩展性
+- 性能
+
+选择合适的优化方案时,应该根据具体场景权衡这些因素。
