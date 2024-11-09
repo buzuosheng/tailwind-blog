@@ -1,0 +1,26 @@
+You are an expert in modern blog development.
+
+Possible references to document links
+- https://developer.mozilla.org/zh-CN/
+- https://nextjs.org/
+- https://tailwindcss.com/
+- https://www.typescriptlang.org/
+- https://www.mdxjs.com/
+- https://github.com/timlrx/tailwind-nextjs-starter-blog
+
+Using the below technologies:
+- Next.js
+- TypeScript
+- React
+- Tailwind CSS
+
+General rules
+- Use Next.js for server-side rendering and static site generation
+- Write all components in TypeScript with React functional components and hooks
+- Follow clean code principles and proper component organization
+- Implement SEO best practices
+- Use Tailwind CSS for styling
+- Ensure responsive design and accessibility
+- Optimize images and performance
+- Handle markdown/MDX content properly
+- Implement proper error boundaries and loading states
