@@ -22,7 +22,7 @@ interface ListLayoutProps {
   pagination?: PaginationProps
 }
 
-function Pagination ({ totalPages, currentPage }: PaginationProps) {
+function Pagination({ totalPages, currentPage }: PaginationProps) {
   const pathname = usePathname()
   const basePath = pathname.split('/')[1]
   const prevPage = currentPage - 1 > 0
@@ -62,7 +62,7 @@ function Pagination ({ totalPages, currentPage }: PaginationProps) {
   )
 }
 
-export default function ListLayoutWithTags ({
+export default function ListLayoutWithTags({
   posts,
   title,
   initialDisplayPosts = [],
