@@ -202,6 +202,8 @@ function DatePicker() {
 
 #### clsx/classnames
 
+classnames（或 clsx）是一个轻量级的工具库，专门用于处理条件性的类名组合。它的主要优势在于提供了一种声明式的方式来处理复杂的类名逻辑。当组件需要根据不同的 props 或状态来动态改变样式时，使用 classnames 可以让代码更加清晰和易于维护。它支持多种参数类型（字符串、对象、数组），并会自动过滤掉假值（false、null、undefined），这使得条件渲染变得非常简单。在大型项目中，这种灵活性尤其重要，因为它可以帮助我们处理复杂的样式逻辑而不会使代码变得混乱。
+
 处理条件类名：
 
 ```tsx
@@ -229,15 +231,68 @@ function Button({ variant, size, className }) {
 
 #### tailwind-merge
 
-解决类名冲突：
+tailwind-merge 解决了 Tailwind CSS 中一个常见的问题：类名冲突。在 Tailwind 中，后面的类名会覆盖前面的类名，但有时这种覆盖可能会导致意外的结果。例如，当你有一个基础组件样式 `bg-white`，然后通过 props 传入 `bg-gray-200` 想要覆盖它时，简单的字符串拼接可能会导致两个类名同时存在，而不是预期的覆盖效果。tailwind-merge 通过智能解析类名并正确处理这些冲突，确保样式按照预期工作。它特别适合用在可复用组件中，这些组件需要通过 props 接收自定义样式类名。
+
+常见的冲突场景包括：
+- 背景颜色类（bg-white vs bg-gray-200）
+- 文本颜色类（text-gray-600 vs text-gray-900）
+- 布局类（grid vs flex）
+- 宽度类（w-max vs w-full）
+- 状态类（hover:bg-gray-200 vs hover:bg-blue-500）
 
 ```tsx
 import { twMerge } from 'tailwind-merge'
 
-function Card({ className, children }) {
-  return <div className={twMerge('rounded-lg border p-4 shadow-sm', className)}>{children}</div>
+interface CardProps {
+  forceHover?: boolean
+  disabled?: boolean
+  isMuted?: boolean
+  className?: string
 }
+
+function Card({ 
+  forceHover = false, 
+  disabled = false, 
+  isMuted = false, 
+  className 
+}: CardProps) {
+  return (
+    <div
+      className={twMerge(
+        // 基础样式
+        'grid w-max gap-2',
+        // 背景状态
+        forceHover ? 'bg-gray-200' : [
+          'bg-white',
+          !disabled && 'hover:bg-gray-200'
+        ],
+        // 文本状态
+        isMuted && 'text-gray-600',
+        // 自定义样式
+        className
+      )}
+    >
+      卡片内容
+    </div>
+  )
+}
+
+// 使用示例
+<Card
+  forceHover={true}
+  disabled={false}
+  isMuted={true}
+  className="w-full hover:bg-blue-500"
+/>
 ```
+
+在上面的示例中：
+1. `forceHover` 控制是否强制使用悬停状态的背景色
+2. `disabled` 控制是否禁用悬停效果
+3. `isMuted` 控制是否使用较浅的文本颜色
+4. `className` 允许传入自定义样式来覆盖默认样式
+
+通过 tailwind-merge，这些样式会按照正确的优先级进行合并，避免类名冲突带来的问题。
 
 ## 高级特性
 
