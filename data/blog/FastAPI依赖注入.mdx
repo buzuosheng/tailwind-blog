@@ -1,0 +1,175 @@
+---
+title: FastAPI 依赖注入机制详解及与 Nest.js 的对比
+date: 2024-01-01 10:00
+draft: false
+tags: ['Python', 'FastAPI', 'Web开发', '依赖注入']
+summary: '深入解析 FastAPI 的依赖注入机制，包括基本概念、实现原理及实践案例，并与 Nest.js 的依赖注入系统进行对比分析。'
+---
+
+> 本文发布于 2024-01-01，主要介绍 FastAPI 的依赖注入机制及其实现原理，并与 Nest.js 进行对比分析。
+
+# FastAPI 依赖注入机制详解
+
+![FastAPI Logo](https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png)
+
+FastAPI 是一个现代、高性能的 Python Web 框架，专注于构建 API。它的依赖注入系统不仅功能强大，还与 Python 的类型提示系统完美结合，让我们能够编写出更加模块化、可测试和可维护的代码。
+
+## 一、依赖注入基础
+
+### 1. 依赖注入的概念
+
+依赖注入（Dependency Injection，简称 DI）是一种软件设计模式，它的核心思想是将依赖关系的创建与业务逻辑分离。在 FastAPI 中，依赖注入通过 `Depends` 类实现，它能够：
+
+- 自动处理依赖的生命周期
+- 提供类型安全的依赖管理
+- 支持异步操作
+- 简化测试和模拟
+
+### 2. FastAPI 依赖注入的基本用法
+
+以数据库连接为例，展示 FastAPI 依赖注入的基本使用方式：
+
+```python
+from fastapi import Depends, FastAPI
+from typing import Generator
+
+app = FastAPI()
+
+async def get_db() -> Generator:
+    db = Database()
+    try:
+        yield db  # 使用 yield 实现上下文管理
+    finally:
+        await db.close()  # 确保资源正确释放
+
+@app.get("/users/")
+async def read_users(db: Database = Depends(get_db)):
+    return await db.get_all_users()
+```
+
+### 3. FastAPI 依赖注入的高级特性
+
+#### a) 参数化依赖
+
+FastAPI 支持创建可配置的依赖项：
+
+```python
+from typing import Optional
+
+def pagination(
+    page: Optional[int] = 1,
+    page_size: Optional[int] = 10,
+    max_page_size: int = 100
+) -> dict:
+    # 参数验证和处理
+    final_size = min(page_size, max_page_size)
+    skip = (page - 1) * final_size
+    return {
+        "skip": skip,
+        "limit": final_size,
+        "page": page
+    }
+
+@app.get("/items/")
+async def list_items(
+    pagination_params: dict = Depends(pagination)
+):
+    return {
+        "params": pagination_params,
+        "items": []  # 实际项目中从数据库获取数据
+    }
+```
+
+#### b) 依赖嵌套与链式依赖
+
+FastAPI 支持复杂的依赖关系链：
+
+```python
+from fastapi import Depends, HTTPException
+from typing import Optional
+
+async def get_current_user(
+    token: str,
+    db: Database = Depends(get_db)
+) -> Optional[User]:
+    user = await db.get_user_by_token(token)
+    if not user:
+        raise HTTPException(status_code=401)
+    return user
+
+async def get_admin_user(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403)
+    return current_user
+
+@app.get("/admin/dashboard")
+async def admin_dashboard(
+    admin: User = Depends(get_admin_user)
+):
+    return {"message": f"Welcome admin {admin.username}"}
+```
+
+#### c) 基于 Pydantic 的依赖验证
+
+结合 Pydantic 模型，实现更强大的参数验证：
+
+```python
+from pydantic import BaseModel, Field
+from typing import Optional
+
+class PaginationParams(BaseModel):
+    page: int = Field(default=1, ge=1)
+    page_size: int = Field(default=10, ge=1, le=100)
+    sort_by: Optional[str] = None
+    order: Optional[str] = Field(
+        default="asc",
+        pattern="^(asc|desc)$"
+    )
+
+@app.get("/users/")
+async def list_users(
+    params: PaginationParams,  # FastAPI 自动处理参数验证
+    db: Database = Depends(get_db)
+):
+    users = await db.get_users(
+        skip=(params.page - 1) * params.page_size,
+        limit=params.page_size,
+        sort_by=params.sort_by,
+        order=params.order
+    )
+    return {
+        "pagination": params.dict(),
+        "data": users
+    }
+```
+
+这种方式的优势：
+- 自动参数验证和类型转换
+- 完整的 OpenAPI 文档生成
+- IDE 智能提示支持
+- 清晰的错误提示
+- 易于测试和维护
+
+## 二、最佳实践建议
+
+1. **依赖函数命名**：使用描述性的名称，如 `get_current_user` 而不是 `user`
+
+2. **异常处理**：在依赖函数中妥善处理异常，返回合适的 HTTP 状态码
+
+3. **资源管理**：使用 `yield` 语句确保资源正确释放
+
+4. **类型提示**：始终添加类型注解，提高代码可维护性
+
+5. **依赖缓存**：合理使用 `use_cache=False` 参数控制依赖缓存行为
+
+```python
+@app.get("/items/")
+async def read_items(
+    fresh_db: Database = Depends(get_db, use_cache=False)
+):
+    return await fresh_db.get_items()
+```
+
+通过合理使用 FastAPI 的依赖注入系统，我们可以构建出更加模块化、可测试和可维护的应用程序。
