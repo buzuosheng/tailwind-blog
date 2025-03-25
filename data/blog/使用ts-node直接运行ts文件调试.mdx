@@ -1,18 +1,25 @@
 ---
-title: 使用 ts-node 直接运行 TypeScript 文件调试
+title: TypeScript 开发利器：ts-node 与 tsx 实战指南
 date: 2024-11-10 22:19:51
 tags: ['ts-node', 'typescript', 'tsx']
 draft: false
-summary: 详细介绍如何使用 ts-node 和 tsx 直接运行 TypeScript 文件，以及常见问题的解决方案
+summary: 详细介绍如何使用 ts-node 和 tsx 直接运行 .ts 文件，以及常见问题的解决方案
 ---
 
-## 应用场景
+在日常开发中，我们经常需要编写和运行 TypeScript 脚本来测试功能或自动化任务。本文将详细介绍如何使用 ts-node 和 tsx 直接运行 TypeScript 文件，以及解决过程中可能遇到的常见问题。
 
-在日常开发中，我们经常需要编写和运行 TypeScript 脚本。本文将介绍两种主流的方案：使用 ts-node 和 tsx。
+## 为什么需要直接运行 TypeScript？
 
-## 使用 ts-node
+TypeScript 需要编译成 JavaScript 才能被 Node.js 执行，这个过程通常需要两个步骤：
 
-运行 TypeScript 脚本需要安装 `ts-node`，注意这个库需要局部安装：
+1. 使用 `tsc` 将 TypeScript 编译为 JavaScript
+2. 使用 `node` 执行编译后的 JavaScript 文件
+
+这个流程在开发阶段非常繁琐，尤其是需要频繁修改和测试代码时。幸运的是，我们有更便捷的工具可以一步到位。
+
+## 方案一：使用 ts-node
+
+### 安装依赖
 
 ```bash
 yarn add -D ts-node typescript @types/node
@@ -20,45 +27,69 @@ yarn add -D ts-node typescript @types/node
 npm install -D ts-node typescript @types/node
 ```
 
+> ⚠️ 注意：建议将这些依赖安装在项目本地而非全局，以避免版本冲突问题。
+
 ### 配置步骤
 
-1. 在 `tsconfig.json` 中添加以下配置：
+1. 在 `tsconfig.json` 中添加必要配置：
+
 ```json
 {
   "compilerOptions": {
     "module": "ESNext",  // 或 "ES2015"
     "moduleResolution": "node", // 必须添加
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "target": "ES2020",
+    "sourceMap": true,
+    "outDir": "dist"
+  },
+  "include": ["src/**/*"]
 }
 ```
 
-2. 在 `package.json` 中添加：
+2. 在 `package.json` 中设置模块类型：
+
 ```json
 {
   "type": "module"
 }
 ```
 
-3. 修改导入语句，确保包含文件扩展名：
+3. 在导入语句中必须包含文件扩展名：
+
 ```typescript
-// ❌ 错误
+// ❌ 错误写法
 import data from './data'
-// ✅ 正确
+
+// ✅ 正确写法
 import data from './data.js'
 ```
 
 ### 运行命令
 
 ```bash
-ts-node --esm ./script.ts
-# 或者
-node --loader ts-node/esm ./script.ts
+# 方式一
+ts-node --esm ./src/script.ts
+
+# 方式二
+node --loader ts-node/esm ./src/script.ts
 ```
 
-## 使用 tsx（推荐）
+你也可以在 `package.json` 中添加快捷命令：
 
-[tsx](https://github.com/privatenumber/tsx) 是一个更现代的替代方案，基于 esbuild，提供更快的执行速度：
+```json
+{
+  "scripts": {
+    "dev": "ts-node --esm ./src/script.ts"
+  }
+}
+```
+
+## 方案二：使用 tsx（推荐）
+
+[tsx](https://github.com/privatenumber/tsx) 是一个基于 esbuild 的现代化替代方案，提供了更快的执行速度和更简单的配置。
+
+### 安装
 
 ```bash
 yarn add -D tsx
@@ -66,58 +97,86 @@ yarn add -D tsx
 npm install -D tsx
 ```
 
-### 优势
-- 更快的启动速度
-- 无需额外配置
-- 支持 TypeScript 和 ESM
-- 内置 node-fetch 等常用模块
-
 ### 使用方式
 
 ```bash
-tsx ./script.ts
+tsx ./src/script.ts
 ```
+
+添加到 `package.json` 中：
+
+```json
+{
+  "scripts": {
+    "dev": "tsx ./src/script.ts",
+    "watch": "tsx watch ./src/script.ts"
+  }
+}
+```
+
+### tsx 的优势
+
+- **更快的启动速度**：基于 esbuild，比 ts-node 快 10-20 倍
+- **零配置**：无需复杂的 tsconfig 设置
+- **内置支持**：自动支持 TypeScript、JSX 和 ESM
+- **开发友好**：内置了 node-fetch 等常用模块
+- **监视模式**：支持 `watch` 模式自动重启
 
 ## 常见问题及解决方案
 
-1. **无法使用 import 语句**
+### 1. 无法使用 import 语句
+
 ```
 SyntaxError: Cannot use import statement outside a module
 ```
-解决：在 `package.json` 中添加 `"type": "module"`
 
-2. **找不到模块**
+**解决方案**：在 `package.json` 中添加 `"type": "module"`
+
+### 2. 找不到模块
+
 ```
 Error [ERR_MODULE_NOT_FOUND]: Cannot find module
 ```
-解决：添加文件扩展名（.js 或 .ts）
 
-3. **TypeScript 文件扩展名报错**
+**解决方案**：
+- 添加文件扩展名（.js 或 .ts）
+- 检查路径是否正确
+- 确保依赖已正确安装
+
+### 3. TypeScript 文件扩展名报错
+
 ```
 TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension ".ts"
 ```
-解决：使用正确的命令格式：`node --loader ts-node/esm` 或直接使用 `tsx`
 
-4. **fetch 未定义**
+**解决方案**：
+- 使用正确的命令格式：`node --loader ts-node/esm` 
+- 或直接使用 `tsx`
+
+### 4. fetch 未定义
+
 ```
 ReferenceError: fetch is not defined
 ```
-解决方案：
-```bash
-# 使用 ts-node 时需要安装
-yarn add node-fetch
-# 使用 tsx 时已内置，无需安装
-```
+
+**解决方案**：
+- 使用 ts-node 时需要安装 `node-fetch`：
+  ```bash
+  yarn add node-fetch
+  import fetch from 'node-fetch';
+  ```
+- 使用 tsx 时已内置，无需额外安装
 
 ## 性能对比
 
-| 工具 | 启动时间 | 配置复杂度 | 内存占用 |
-|------|----------|------------|----------|
-| ts-node | 1-2s | 需要配置 | 较大 |
-| tsx | 0.1-0.5s | 零配置 | 较小 |
+| 工具 | 启动时间 | 配置复杂度 | 内存占用 | 热更新支持 |
+|------|----------|------------|----------|------------|
+| ts-node | 1-2s | 中等 | 较大 | 需配合 nodemon |
+| tsx | 0.1-0.5s | 零配置 | 较小 | 内置 watch 模式 |
 
 ## 写在最后
 
-1. 对于新项目，推荐使用 tsx，它提供了更好的开发体验和性能
-2. 遇到问题时，建议优先查看 GitHub Issues，通常能找到最准确的解决方案
-3. 请确保项目依赖安装在本地，避免使用全局安装导致的版本冲突问题
+1. **选择建议**：对于新项目，强烈推荐使用 tsx，它提供了更好的开发体验和性能
+2. **问题排查**：遇到问题时，建议优先查看 GitHub Issues，通常能找到最准确的解决方案
+3. **依赖管理**：请确保项目依赖安装在本地，避免使用全局安装导致的版本冲突问题
+4. **调试技巧**：结合 VS Code 的调试功能，可以更高效地开发和测试 TypeScript 脚本
