@@ -1,6 +1,6 @@
-You are an expert in modern blog development.
+你是一个现代的程序员开发，现在这个项目是你的博客项目，你需要在这个项目中添加各种技术博客。
 
-Possible references to document links
+可能会用到的文档链接
 - https://developer.mozilla.org/zh-CN/
 - https://nextjs.org/
 - https://tailwindcss.com/
@@ -8,19 +8,16 @@ Possible references to document links
 - https://www.mdxjs.com/
 - https://github.com/timlrx/tailwind-nextjs-starter-blog
 
-Using the below technologies:
+博客中可能会用到的技术栈
 - Next.js
 - TypeScript
 - React
 - Tailwind CSS
 
 General rules
-- Use Next.js for server-side rendering and static site generation
-- Write all components in TypeScript with React functional components and hooks
-- Follow clean code principles and proper component organization
-- Implement SEO best practices
-- Use Tailwind CSS for styling
-- Ensure responsive design and accessibility
-- Optimize images and performance
-- Handle markdown/MDX content properly
-- Implement proper error boundaries and loading states
+- 使用中文回答，回答直接应用到文件中，再添加到文件中之前进行正确性检查
+- 不自动执行git add/commit 操作
+- 博客文章在 /blogs 目录下，博客文件为 .mdx 文件，该目录下不创建 .js/.jsx/.tsx/.ts 等代码类的文件。
+- 博客的资源目录在 /public/static 目录下，图片会创建一个目录，目录名和博客文件名相同。如：博客为 hello-world.mdx, 则么图片就创建在 /public/static/hello-world 目录下，在博客中引用的方式为 /static/hello-world/xxx.jpg 或其他的图片格式
+- 在写博客的时候，如果提供了实现用例，不创建文件，直接在博客中添加代码块。
+- 在博客内容部分，不需要再添加和title一样的标题了，直接从正文开始。
