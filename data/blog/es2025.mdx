@@ -1,0 +1,157 @@
+---
+title: 2025前端应该知道的一些新特性
+date: 2025-04-18
+tags: ['javascript', 'es2025', '前端开发']
+draft: false
+summary: 2025前端应该知道的一些新特性
+---
+
+JavaScript作为一门不断发展的语言，每年都会引入新的特性。ES2025带来了许多实用的新功能，本文将详细介绍这些特性及其应用场景。
+
+## Array.prototype.at()
+
+`at()`方法允许我们使用负索引访问数组元素，这在以前必须通过`array[array.length - n]`这种方式实现。
+
+```javascript
+const array = [1, 2, 3, 4, 5];
+
+// 传统方式获取最后一个元素
+const lastElement = array[array.length - 1]; // 5
+
+// 使用at()方法
+const lastElementWithAt = array.at(-1); // 5
+const secondToLastElement = array.at(-2); // 4
+```
+
+这个方法大大简化了数组末尾元素的访问，使代码更加简洁和可读。
+
+## Promise.withResolvers()
+
+这个新方法提供了一种更优雅的方式来创建Promise并获取其解析和拒绝函数，无需使用传统的回调模式。
+
+```javascript
+// 传统方式
+let resolveFunc, rejectFunc;
+const promise = new Promise((resolve, reject) => {
+  resolveFunc = resolve;
+  rejectFunc = reject;
+});
+
+// 使用Promise.withResolvers()
+const { promise, resolve, reject } = Promise.withResolvers();
+
+// 在其他地方使用
+setTimeout(() => resolve('完成！'), 1000);
+```
+
+这种模式在处理事件触发器、异步操作或需要在外部控制Promise解析的场景中特别有用。
+
+## structuredClone()
+
+`structuredClone()`是一个强大的全局方法，用于创建对象的深拷贝，可以正确处理循环引用和大多数内置JavaScript对象。
+
+```javascript
+const original = {
+  name: '张三',
+  info: {
+    age: 30,
+    address: '北京市'
+  },
+  skills: ['JavaScript', 'TypeScript']
+};
+
+// 深拷贝
+const clone = structuredClone(original);
+
+// 修改克隆对象不会影响原始对象
+clone.info.age = 31;
+console.log(original.info.age); // 30
+console.log(clone.info.age); // 31
+
+// 循环引用处理
+const obj = { name: '循环引用' };
+obj.self = obj;
+const clonedObj = structuredClone(obj); // 可以正确处理
+```
+
+与`JSON.parse(JSON.stringify())`不同，`structuredClone()`可以处理循环引用，也能复制Map、Set、Date、RegExp等类型。
+
+## Set的新扩展方法
+
+ES2025为Set对象引入了一系列集合操作方法，大大增强了集合处理能力。
+
+### Set.prototype.difference
+
+返回当前Set与另一个Set的差集（在当前集合中但不在另一个集合中的元素）。
+
+```javascript
+const set1 = new Set([1, 2, 3, 4]);
+const set2 = new Set([3, 4, 5, 6]);
+
+const diff = set1.difference(set2); // Set { 1, 2 }
+```
+
+### Set.prototype.intersection
+
+返回当前Set与另一个Set的交集。
+
+```javascript
+const set1 = new Set([1, 2, 3, 4]);
+const set2 = new Set([3, 4, 5, 6]);
+
+const intersection = set1.intersection(set2); // Set { 3, 4 }
+```
+
+### Set.prototype.union
+
+返回当前Set与另一个Set的并集。
+
+```javascript
+const set1 = new Set([1, 2, 3]);
+const set2 = new Set([3, 4, 5]);
+
+const union = set1.union(set2); // Set { 1, 2, 3, 4, 5 }
+```
+
+### Set.prototype.symmetricDifference
+
+返回两个集合的对称差集（在其中一个集合中但不在两个集合交集中的元素）。
+
+```javascript
+const set1 = new Set([1, 2, 3, 4]);
+const set2 = new Set([3, 4, 5, 6]);
+
+const symDiff = set1.symmetricDifference(set2); // Set { 1, 2, 5, 6 }
+```
+
+### 集合关系判断方法
+
+ES2025还为Set添加了几个检查集合间关系的方法：
+
+```javascript
+const set1 = new Set([1, 2]);
+const set2 = new Set([1, 2, 3]);
+const set3 = new Set([4, 5]);
+
+// 检查是否是另一个集合的子集
+set1.isSubsetOf(set2); // true
+
+// 检查是否是另一个集合的超集
+set2.isSupersetOf(set1); // true
+
+// 检查两个集合是否没有共同元素
+set1.isDisjointFrom(set3); // true
+```
+
+## 总结
+
+ES2025带来的这些新特性显著提升了JavaScript的开发体验和代码可读性。`Array.at()`简化了数组访问，`Promise.withResolvers()`优化了Promise创建模式，`structuredClone()`解决了深拷贝的痛点，而Set的新方法则完善了JavaScript的集合操作能力。
+
+这些特性进一步证明了JavaScript作为一门不断发展的语言，始终在追求更好的开发体验和更强大的功能。
+
+## 参考链接
+
+- [Features that every JS developer must know in 2025](https://waspdev.com/articles/2025-04-06/features-that-every-js-developer-must-know-in-2025)
+- [MDN Web Docs](https://developer.mozilla.org/zh-CN/)
+- [TC39 Proposals](https://github.com/tc39/proposals)
+

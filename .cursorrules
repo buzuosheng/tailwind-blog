@@ -21,3 +21,5 @@ General rules
 - 博客的资源目录在 /public/static 目录下，图片会创建一个目录，目录名和博客文件名相同。如：博客为 hello-world.mdx, 则么图片就创建在 /public/static/hello-world 目录下，在博客中引用的方式为 /static/hello-world/xxx.jpg 或其他的图片格式
 - 在写博客的时候，如果提供了实现用例，不创建文件，直接在博客中添加代码块。
 - 在博客内容部分，不需要再添加和title一样的标题了，直接从正文开始。
+- 不需要添加logo，例如React的logo等。
+- 在生成博客的时候，根据内容内容的类型在文章头部的 tags 中添加对应的标签。
