@@ -244,6 +244,44 @@ Grid允许元素重叠，这在创建复杂布局时非常有用：
 }
 ```
 
+
+### 7. 单元格内元素对齐：justify-self和align-self
+
+Grid布局最显著的优势之一是对单个网格项在其所在网格单元格内的精确对齐控制：
+
+```css
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 200px);
+  grid-template-rows: repeat(3, 200px);
+  gap: 10px;
+}
+
+.item1 {
+  background-color: #f08080;
+  /* 在单元格内水平居中 */
+  justify-self: center;
+  /* 在单元格内垂直居中 */
+  align-self: center;
+}
+
+.item2 {
+  background-color: #90ee90;
+  /* 在单元格内靠右对齐 */
+  justify-self: end;
+  /* 在单元格内靠底对齐 */
+  align-self: end;
+}
+
+.item3 {
+  background-color: #add8e6;
+  /* 拉伸填满整个单元格宽度 */
+  justify-self: stretch;
+  /* 在单元格内靠顶对齐 */
+  align-self: start;
+}
+```
+
 ## 总结
 
 在实现"上下固定高度，中间自适应"的布局需求时，Flex和Grid都是有效的解决方案：
